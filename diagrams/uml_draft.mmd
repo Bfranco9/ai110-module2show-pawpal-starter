@@ -1,0 +1,53 @@
+classDiagram
+    class Owner {
+        +String name
+        +int available_minutes
+        +List~String~ available_windows
+        +Dict preferences
+        +List~Pet~ pets
+        +add_pet(pet: Pet) void
+        +set_availability(windows: List, minutes: int) void
+        +set_preference(key: String, value: String) void
+    }
+
+    class Pet {
+        +String name
+        +String species
+        +int age
+        +String notes
+        +List~Task~ tasks
+        +add_task(task: Task) void
+        +remove_task(title: String) void
+        +get_pending_tasks() List~Task~
+    }
+
+    class Task {
+        +String title
+        +int duration_minutes
+        +String priority
+        +String category
+        +String preferred_time
+        +String frequency
+        +bool completed
+        +priority_score() int
+        +mark_complete() void
+        +is_due_today() bool
+    }
+
+    class Scheduler {
+        +Owner owner
+        +Pet pet
+        +List~Tuple~ plan
+        +List~Task~ skipped
+        +sort_by_priority(tasks: List~Task~) List~Task~
+        +filter_by_constraints(tasks: List~Task~) List~Task~
+        +detect_conflicts() List~String~
+        +build_plan() List~Tuple~
+        +explain_plan() String
+    }
+
+    Owner "1" --> "1..*" Pet : owns
+    Pet "1" *-- "0..*" Task : needs
+    Scheduler --> Owner : reads constraints from
+    Scheduler --> Pet : schedules tasks for
+    Scheduler ..> Task : orders and selects
