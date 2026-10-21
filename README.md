@@ -54,6 +54,22 @@ Paste a sample of your app's CLI or Streamlit output here so a reader can see wh
 #   ...
 ```
 
+```
+==================================================
+Today's Schedule for Jordan
+==================================================
+07:00  Biscuit  Brushing        15 min  [low]
+       why: low priority, placed in the earliest open slot
+07:30  Mochi    Morning walk    30 min  [high]
+       why: high priority, fixed at 07:30
+08:15  Biscuit  Feeding         10 min  [high]
+       why: high priority, fixed at 08:15
+12:00  Biscuit  Litter box      10 min  [medium]
+       why: medium priority, fixed at 12:00
+18:00  Mochi    Evening walk    30 min  [medium]
+       why: medium priority, fixed at 18:00
+```
+
 ## 🧪 Testing PawPal+
 
 ```bash
