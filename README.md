@@ -74,16 +74,26 @@ Today's Schedule for Jordan
 
 ```bash
 # Run the full test suite:
-pytest
+python -m pytest
 
 # Run with coverage:
 pytest --cov
+
 ```
-
 Sample test output:
+collected 30 items                                                                                                             
 
+tests\test_pawpal.py ..............................                                                                      [100%]
+
+===================================================== 30 passed in 0.12s ======================================================
 ```
 # Paste your pytest output here
+```
+
+```
+Confidence Level: 5
+Description of Pytest:
+There are 20 edge cases on top of the origial test cases covered in the pytest. There is areas to cover the sorting, recurring tasks, conflicts for back-to-back tasks that arent flagged, plan building, and the data setup. All test cases have passed with current build.
 ```
 
 ## 📐 Smarter Scheduling
