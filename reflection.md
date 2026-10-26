@@ -42,7 +42,9 @@ This tradeoff is reasonable as it keeps a precise schedule in order to help. If 
 **a. How you used AI**
 
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
+I used the AI to primarily help through creating and understanding how to use dataclasses while suggesting areas of improvement to make the code more readable.
 - What kinds of prompts or questions were most helpful?
+Specific prompts that tackle a task directly by referencing the correct file, methods, and/or lines of code were the most useful as well as mentioning to not change any code directly if a task was already completed (aka a method was correctly implemented before to fit a standard)
 
 **b. Judgment and verification**
 

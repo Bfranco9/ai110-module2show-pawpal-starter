@@ -43,13 +43,23 @@ class Task:
         today = today or date.today()
         return not self.completed and self.due_date <= today
 
+    def get_status(self) -> str:
+        """Return the completion status of this task: "completed" or "pending"."""
+        return "completed" if self.completed else "pending"
+
     def mark_complete(self) -> Optional[Task]:
-        """Mark this task completed and return the next occurrence if it recurs."""
+        """Mark this task completed and return the next occurrence (today + 1/7 days) if it recurs.
+
+        Returns None for one-time tasks or if the task was already completed, so
+        completing twice never creates a duplicate occurrence.
+        """
+        if self.completed:
+            return None
         self.completed = True
         days = FREQUENCY_DAYS.get(self.frequency)
         if days is None:
             return None
-        return replace(self, completed=False, due_date=self.due_date + timedelta(days=days))
+        return replace(self, completed=False, due_date=date.today() + timedelta(days=days))
 
 
 @dataclass
@@ -145,7 +155,7 @@ class Scheduler:
 
     def sort_by_time(self, tasks: List[Task]) -> List[Task]:
         """Return tasks ordered by fixed start time; flexible tasks go last."""
-        return sorted(tasks, key=lambda t: (t.time == "", t.time))
+        return sorted(tasks, key=lambda t: to_minutes(t.time) if t.time else float("inf"))
 
     def filter_by_constraints(self, tasks: List[Task], today: Optional[date] = None) -> List[Task]:
         """Keep only tasks due today whose fixed time (if any) falls inside the owner's day."""
