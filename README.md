@@ -88,14 +88,22 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Sorting by time | `Scheduler.sort_by_time()` | Orders tasks by `HH:MM` start time using `sorted()` with a minutes-since-midnight key; flexible (untimed) tasks go last |
+| Sorting by priority | `Scheduler.sort_by_priority()` | High priority first, then fixed-time tasks, then shortest duration; used when building the plan |
+| Filtering | `Scheduler.get_tasks(pet_name, completed)`, `Scheduler.filter_by_constraints()` | Filter by pet and/or completion status (combinable); the plan also drops tasks not due yet or outside the owner's day window |
+| Conflict detection | `Scheduler.detect_conflicts()` | Returns warning strings (never raises) for overlapping fixed-time tasks, same pet or different pets; `build_plan()` skips the lower-priority task and records why |
+| Recurring tasks | `Task.mark_complete()`, `Scheduler.mark_task_complete()` | Completing a `daily` / `weekly` task creates the next occurrence due today + 1 / + 7 days (via `timedelta`) on the same pet; one-time tasks return `None`, and completing twice never duplicates |
+
+### How each feature works
+
+- **Sorting by time:** `sort_by_time()` converts each `"HH:MM"` to minutes with `to_minutes()`, so unpadded times like `"7:30"` still sort correctly. Sorting is stable, so tasks at the same time keep their original order.
+- **Filtering:** `get_tasks(pet_name="Mochi", completed=False)` returns Mochi's pending tasks. Passing `None` (the default) for either argument skips that filter.
+- **Conflict detection:** timed tasks are sorted, then each is compared with the tasks after it. The inner loop stops at the first task that starts at or after the current task ends. Back-to-back tasks (one ends exactly when the next starts) are not conflicts.
+- **Recurring tasks:** `Task.mark_complete()` marks the task done and returns a copy with `completed=False` and a new `due_date`. `Scheduler.mark_task_complete()` adds that copy to the pet that owns the task.
+
+Run `python main.py` to see all four features in the terminal.
 
 ## 📸 Demo Walkthrough
 

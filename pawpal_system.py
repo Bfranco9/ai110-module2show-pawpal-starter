@@ -141,7 +141,14 @@ class Scheduler:
         self.skipped: List[Tuple[Task, str]] = []
 
     def get_tasks(self, pet_name: Optional[str] = None, completed: Optional[bool] = None) -> List[Task]:
-        """Return the owner's tasks, optionally filtered by pet name and/or completion status."""
+        """Return the owner's tasks, optionally filtered by pet name and/or completion status.
+
+        Args:
+            pet_name: Keep only this pet's tasks; None means every pet.
+            completed: True keeps finished tasks, False keeps pending ones; None keeps both.
+
+        Filters combine (AND), and tasks keep their insertion order.
+        """
         tasks = self.owner.get_all_tasks()
         if pet_name is not None:
             tasks = [t for t in tasks if t.pet_name == pet_name]
@@ -150,11 +157,20 @@ class Scheduler:
         return tasks
 
     def sort_by_priority(self, tasks: List[Task]) -> List[Task]:
-        """Return tasks ordered by priority (high first), then fixed-time first, then shortest."""
+        """Return tasks ordered by priority (high first), then fixed-time first, then shortest.
+
+        Uses sorted() with a tuple key, so ties on one criterion fall through to the next.
+        The input list is not modified.
+        """
         return sorted(tasks, key=lambda t: (-t.priority_score(), t.time == "", t.duration_minutes))
 
     def sort_by_time(self, tasks: List[Task]) -> List[Task]:
-        """Return tasks ordered by fixed start time; flexible tasks go last."""
+        """Return tasks ordered by fixed start time; flexible tasks go last.
+
+        The key converts "HH:MM" to minutes since midnight (so "7:30" sorts correctly
+        even without zero-padding); tasks with no time get infinity and sort to the end.
+        The sort is stable, so equal times keep their original order.
+        """
         return sorted(tasks, key=lambda t: to_minutes(t.time) if t.time else float("inf"))
 
     def filter_by_constraints(self, tasks: List[Task], today: Optional[date] = None) -> List[Task]:
@@ -171,7 +187,14 @@ class Scheduler:
         return kept
 
     def detect_conflicts(self, today: Optional[date] = None) -> List[str]:
-        """Return warnings for fixed-time tasks due today that overlap, across all pets."""
+        """Return warning messages for fixed-time tasks due today that overlap, across all pets.
+
+        Lightweight strategy: sort the timed tasks by start, then compare each task with the
+        ones after it, stopping as soon as a later task starts at or after the current task's
+        end (the list is sorted, so nothing further can overlap). Tasks that merely touch
+        (one ends exactly when the next starts) are not conflicts. Never raises; an empty
+        list means no conflicts.
+        """
         timed = self.sort_by_time([t for t in self.owner.get_all_tasks() if t.time and t.is_due_today(today)])
         warnings = []
         for i, first in enumerate(timed):
@@ -232,7 +255,11 @@ class Scheduler:
         return "\n".join(lines)
 
     def mark_task_complete(self, task: Task) -> Optional[Task]:
-        """Complete a task and, if it recurs, add its next occurrence to the same pet."""
+        """Complete a task and, if it recurs, add its next occurrence to the same pet.
+
+        Returns the new Task (due today + 1 day for "daily", + 7 for "weekly"), or None for
+        one-time tasks and for tasks that were already completed.
+        """
         next_task = task.mark_complete()
         pet = self.owner.get_pet(task.pet_name)
         if next_task is not None and pet is not None:
