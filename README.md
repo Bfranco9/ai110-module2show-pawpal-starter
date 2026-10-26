@@ -119,10 +119,13 @@ Run `python main.py` to see all four features in the terminal.
 
 Describe your app in numbered steps so a reader can follow along without watching a video:
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+1. User will open the app to 4 sections: about the app, adding a pet, adding a task, and generating a schedule
+2. User can add 1 pet at a time for name, type of pet, and see their list of pets
+3. User can add tasks assigned to individual pets
+4. User can specify the priority of the task and the expected duration of the task
+5. User can auto-generate a schedule once all expected tasks are listed
+6. User can regenerate the list if any changes occur
 
 **Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+<img width="951" height="452" alt="image" src="https://github.com/user-attachments/assets/195a5fa4-43dc-48c2-be6f-bdaaa3ac3729" />
+
